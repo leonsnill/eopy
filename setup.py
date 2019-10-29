@@ -9,7 +9,7 @@ setup(
     # Needed to actually package something
     packages=['Hand'],
     # Needed for dependencies
-    install_requires=['os', 'glob'],
+    install_requires=None,
     # *strongly* suggested for sharing
     version='0.1',
     # The license can be anything you like
