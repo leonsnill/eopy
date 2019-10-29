@@ -8,7 +8,7 @@ def list_files(dir, ext, path=True, recursive=False):
     :param ext: (str) File extension, e.g. '.txt'.
     :param path: (bool) Return full path (default True).
     :param recursive: (bool) Apply recursive file matching (default False).
-    :return: List of strings.
+    :return: List of strings..
     """
     if path:
         if recursive:
