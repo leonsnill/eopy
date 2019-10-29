@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 
 setup(
     # Needed to silence warnings (and to be a worthwhile package)
@@ -7,7 +7,7 @@ setup(
     author='Leon Nill',
     author_email='leon.nill@hu-berlin.de',
     # Needed to actually package something
-    packages=find_packages(),
+    packages=['lsnrs'],
     # Needed for dependencies
     install_requires=None,
     # *strongly* suggested for sharing
