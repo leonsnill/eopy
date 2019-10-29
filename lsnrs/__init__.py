@@ -1,1 +1,1 @@
-import .Hand
+import Hand
