@@ -7,7 +7,7 @@ setup(
     author='Leon Nill',
     author_email='leon.nill@hu-berlin.de',
     # Needed to actually package something
-    packages=None,
+    packages=find_packages(),
     # Needed for dependencies
     install_requires=None,
     # *strongly* suggested for sharing
