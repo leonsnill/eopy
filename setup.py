@@ -7,7 +7,7 @@ setup(
     author='Leon Nill',
     author_email='leon.nill@hu-berlin.de',
     # Needed to actually package something
-    packages=['Hand', 'Raster', 'Vector'],
+    packages=['Hand'],
     # Needed for dependencies
     install_requires=['os', 'glob'],
     # *strongly* suggested for sharing
