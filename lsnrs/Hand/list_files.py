@@ -1,7 +1,7 @@
 import os
 import glob
 
-def list_files(dir, ext=None, path=True, recursive=False):
+def list_files(dir, pattern=None, path=True, recursive=False):
     """
     Lists files in directory.
     :param dir: (str) Input directory in which to search files.
@@ -10,18 +10,18 @@ def list_files(dir, ext=None, path=True, recursive=False):
     :param recursive: (bool) Apply recursive file matching (default False).
     :return: List of strings..
     """
-    if ext is not None:
-        ext_str = ext
+    if pattern is not None:
+        pattern_str = pattern
     else:
-        ext_str = ''
+        pattern_str = ''
 
     if path:
         if recursive:
-            return glob.glob(dir + '/**/*' + ext_str, recursive=True)
+            return glob.glob(dir + '/**/*' + pattern_str, recursive=True)
         else:
-            return glob.glob(dir + '/*' + ext_str)
+            return glob.glob(dir + '/*' + pattern_str)
     else:
         if recursive:
-            return [os.path.basename(x) for x in glob.glob(dir + '/**/*' + ext_str, recursive=True)]
+            return [os.path.basename(x) for x in glob.glob(dir + '/**/*' + pattern_str, recursive=True)]
         else:
-            return [os.path.basename(x) for x in glob.glob(dir + '/*' + ext_str)]
+            return [os.path.basename(x) for x in glob.glob(dir + '/*' + pattern_str)]
