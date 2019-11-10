@@ -13,6 +13,9 @@ def img_subset(img, extent, coordinates=True, write=False, filename=None):
     :param filename:
     :return:
     """
+    if isinstance(img, str):
+        img = gdal.Open(img)
+
     if coordinates:
         extent = img_offsets(img, extent)
 
