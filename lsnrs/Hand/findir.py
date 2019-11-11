@@ -1,14 +1,15 @@
 import os
 import glob
 
-def list_files(dir, pattern=None, path=True, recursive=False):
+def findir(dir, pattern=None, path=True, recursive=False):
     """
-    Lists files in directory.
+    Lists files / directories in directory.
+
     :param dir: (str) Input directory in which to search files.
     :param ext: (str) Optional. Only return files with certain extension (e.g. '.txt').
     :param path: (bool) Return full path (default True).
     :param recursive: (bool) Apply recursive file matching (default False).
-    :return: List of strings..
+    :return: List of files / directories.
     """
     if pattern is not None:
         pattern_str = pattern

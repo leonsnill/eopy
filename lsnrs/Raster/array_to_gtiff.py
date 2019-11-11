@@ -1,16 +1,20 @@
 import gdal
 
 
-def array_to_geotiff(inp_array, out_file, inp_gdal=None, trans=None, proj=None, compress=True, gdal_return=False):
+def array_to_geotiff(inp_array, out_file, inp_gdal=None, gt=None, pj=None, compress=True, gdal_return=False):
     """
-    Export numpy array to GeoTiff.
-    :param inp_array: (numpy array)
-    :param out_file: (str)
-    :param inp_gdal: (gdal raster) Optional. Reference GDAL raster object.
-    :param trans: (?) __open__
-    :param proj: (str) Target projection in Proj4 format.
-    :param compress: (bool) Use data compression in output tiff. Default to True.
-    :return: (bool) Returns output GDAL object. Default to False.
+    Export numpy array to GeoTiff file by providing either a reference GDAL raster object or GeoTransform and Projection
+    information.
+
+    :param inp_array: (ndarray) Input numpy ndarray.
+    :param out_file: (str) Filename of GeoTiff with extension, e.g. 'new_file.tif'.
+    :param inp_gdal: (gdal raster) Reference GDAL raster object from which to take the GeoTransform and Projection.
+    :param gt: (tuple) GDAL GeoTransform tuple (origin x, pixel width, pixel x rotation, origin y, pixel y rotation,
+    pixel height).
+    :param pj: (str) Target projection in Proj4 format.
+    :param compress: (bool) Use data compression in output tiff (default to True).
+    :param gdal_return: (bool) If GDAL raster object should be returned (default to False).
+    :return: (bool) None (default) / GDAL raster object.
     """
     np2gdal_datatype = {
         "uint8": 1,
@@ -35,14 +39,19 @@ def array_to_geotiff(inp_array, out_file, inp_gdal=None, trans=None, proj=None, 
         zdim = 1
 
     if inp_gdal is not None:
-        trans = inp_gdal.GetGeoTransform()
-        proj = inp_gdal.GetProjection()
+        gt = inp_gdal.GetGeoTransform()
+        pj = inp_gdal.GetProjection()
 
     dtype = np2gdal_datatype[str(inp_array.dtype)]
     driver = gdal.GetDriverByName('GTiff')
-    dst_dataset = driver.Create(out_file, nrow, ncol, zdim, dtype, options=['COMPRESS=DEFLATE'])
-    dst_dataset.SetGeoTransform(trans)
-    dst_dataset.SetProjection(proj)
+
+    if compress:
+        dst_dataset = driver.Create(out_file, nrow, ncol, zdim, dtype, options=['COMPRESS=DEFLATE'])
+    else:
+        dst_dataset = driver.Create(out_file, nrow, ncol, zdim, dtype)
+
+    dst_dataset.SetGeoTransform(gt)
+    dst_dataset.SetProjection(pj)
 
     if len(inp_array.shape) > 2:
         for i in range(zdim):

@@ -4,6 +4,7 @@ import gdal
 def extent(inp_raster):
     """
     Retrieves the coordinates of the extent of a raster file or finds the common extent of multiple raster files.
+
     :param inp_raster: (list) List of raster file path(s).
     :return: (list) List of upper left and lower right coordinates.
     """
