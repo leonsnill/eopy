@@ -23,6 +23,7 @@ def array_to_geotiff(inp_array, out_file, inp_gdal=None, gt=None, pj=None, compr
         "int16": 3,
         "uint32": 4,
         "int32": 5,
+        "int64": 6,
         "float32": 6,
         "float64": 7,
         "complex64": 10,
