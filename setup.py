@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     # Needed to silence warnings (and to be a worthwhile package)
@@ -7,7 +7,8 @@ setup(
     author='Leon Nill',
     author_email='leon.nill@hu-berlin.de',
     # Needed to actually package something
-    packages=['lsnrs', 'lsnrs.Hand', 'lsnrs.Raster'],
+    packages=find_packages(),
+    package_dir={'': 'lsnrs'},
     # Needed for dependencies
     install_requires=['gdal', 'numpy', 'statsmodels'],
     # *strongly* suggested for sharing
