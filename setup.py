@@ -8,8 +8,9 @@ setup(
     author_email='leon.nill@hu-berlin.de',
     # Needed to actually package something
     packages=find_packages(),
+    package_dir={'': 'lsnrs'},
     # Needed for dependencies
-    install_requires=['gdal', 'numpy'],
+    install_requires=['gdal', 'numpy', 'statsmodels'],
     # *strongly* suggested for sharing
     version='0.1',
     # The license can be anything you like
