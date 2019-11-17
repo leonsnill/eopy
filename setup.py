@@ -7,7 +7,7 @@ setup(
     author='Leon Nill',
     author_email='leon.nill@hu-berlin.de',
     # Needed to actually package something
-    packages=['lsnrs', 'Hand', 'Raster'],
+    packages=['lsnrs', 'lsnrs.Hand', 'lsnrs.Raster'],
     # Needed for dependencies
     install_requires=['gdal', 'numpy', 'statsmodels'],
     # *strongly* suggested for sharing
