@@ -1,7 +1,7 @@
 import ogr, osr
 
 
-def points_from_list(coordinates, outfile, epsg=4326, driver='ESRI Shapefile'):
+def coords_to_points(coordinates, outfile, epsg=4326, driver='ESRI Shapefile'):
     """
     Create spatial points dataset from list of xy-coordinates.
 

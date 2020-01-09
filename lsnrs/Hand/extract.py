@@ -1,13 +1,24 @@
-import gdal
-import ogr
+import gdal, ogr, osr
 
 
-def extract(img, points):
+def extract(img, points, field=None):
+    """
+
+    Parameters
+    ----------
+    img
+    points
+
+    Returns
+    -------
+
+    """
 
     if isinstance(img, str):
         img = gdal.Open(img)
 
     gt = img.GetGeoTransform()
+
     values = []
 
     if isinstance(points, list):
@@ -15,20 +26,41 @@ def extract(img, points):
             mx, my = point[0], point[1]
             px = int((mx - gt[0]) / gt[1])  # x pixel
             py = int((my - gt[3]) / gt[5])  # y pixel
-            values.append(img.ReadAsArray(px, py, 1, 1))
+            values.append(img.ReadAsArray(px, py, 1, 1).flatten())
 
     else:
         if isinstance(points, str):
             points = ogr.Open(points)
 
-        points = points.GetLayer()
+        lyr_points = points.GetLayer()
 
-        for feat in points:
-            geom = feat.GetGeometryRef()
+        # Check Spatial Reference System
+        img_crs = img.GetSpatialRef()
+        point_crs = lyr_points.GetSpatialRef()
+
+        if img_crs.IsSame(point_crs):
+            gtransformer = None
+        else:
+            gtransformer = osr.CoordinateTransformation(point_crs, img_crs)
+
+        for feat in lyr_points:
+            geom = feat.GetGeometryRef().Clone()
+
+            if gtransformer:
+                geom.Transform(gtransformer)
+
             mx, my = geom.GetX(), geom.GetY()
             px = int((mx - gt[0]) / gt[1])  # x pixel
             py = int((my - gt[3]) / gt[5])  # y pixel
-            values.append(img.ReadAsArray(px, py, 1, 1))
+
+            if field:
+                field_val = feat.GetField(field)
+                values.append([field_val] + img.ReadAsArray(px, py, 1, 1).flatten().tolist())
+            else:
+                values.append(img.ReadAsArray(px, py, 1, 1).flatten().tolist())
+
+        points = None
+        lyr_points.ResetReading()
 
     return values
 
