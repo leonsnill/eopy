@@ -51,10 +51,13 @@ def extract(img, points, field=None):
             gtransformer = osr.CoordinateTransformation(point_crs, img_crs)
 
         for feat in lyr_points:
-            geom = feat.GetGeometryRef().Clone()
+            if feat.GetGeometryRef().GetGeometryName() == 'MULTIPOINT':
+                g = feat.GetGeometryRef().Clone()
+                geom = g.GetGeometryRef(0)
+            else:
+                g = None
+                geom = feat.GetGeometryRef().Clone()
 
-            if geom.GetGeometryName() == 'MULTIPOINT':
-                geom = geom.GetGeometryRef(0)
 
             if gtransformer:
                 geom.Transform(gtransformer)
@@ -68,6 +71,9 @@ def extract(img, points, field=None):
                 values.append([field_val] + img.ReadAsArray(px, py, 1, 1).flatten().tolist())
             else:
                 values.append(img.ReadAsArray(px, py, 1, 1).flatten().tolist())
+
+            # de-initialise
+            del g, geom
 
         points = None
         lyr_points.ResetReading()
