@@ -75,7 +75,11 @@ def extract(img, points, field=None):
             # de-initialise
             del g, geom
 
-        points = None
+        if isinstance(points, ogr.Layer):
+            points.ResetReading()
+            points = None
+        else:
+            points = None
         lyr_points.ResetReading()
 
     return values
