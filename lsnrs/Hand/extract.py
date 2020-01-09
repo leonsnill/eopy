@@ -53,6 +53,9 @@ def extract(img, points, field=None):
         for feat in lyr_points:
             geom = feat.GetGeometryRef().Clone()
 
+            if geom.GetGeometryName() == 'MULTIPOINT':
+                geom = geom.GetGeometryRef(0)
+
             if gtransformer:
                 geom.Transform(gtransformer)
 
