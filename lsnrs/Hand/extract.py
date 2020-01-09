@@ -32,7 +32,14 @@ def extract(img, points, field=None):
         if isinstance(points, str):
             points = ogr.Open(points)
 
-        lyr_points = points.GetLayer()
+        elif isinstance(points, ogr.DataSource):
+            lyr_points = points.GetLayer()
+
+        elif isinstance(points, ogr.Layer):
+            lyr_points = points
+
+        else:
+            print('points not provided in supported format/type, i.e. string, ogr.DataSource or ogr.Layer')
 
         # Check Spatial Reference System
         img_crs = img.GetSpatialRef()
