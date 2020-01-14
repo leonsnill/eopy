@@ -18,11 +18,11 @@ def findir(dir, pattern=None, path=True, recursive=False):
 
     if path:
         if recursive:
-            return glob.glob(dir + '/**/*' + pattern_str, recursive=True)
+            return sorted(glob.glob(dir + '/**/*' + pattern_str, recursive=True))
         else:
-            return glob.glob(dir + '/*' + pattern_str)
+            return sorted(glob.glob(dir + '/*' + pattern_str))
     else:
         if recursive:
-            return [os.path.basename(x) for x in glob.glob(dir + '/**/*' + pattern_str, recursive=True)]
+            return sorted([os.path.basename(x) for x in glob.glob(dir + '/**/*' + pattern_str, recursive=True)])
         else:
-            return [os.path.basename(x) for x in glob.glob(dir + '/*' + pattern_str)]
+            return sorted([os.path.basename(x) for x in glob.glob(dir + '/*' + pattern_str)])
