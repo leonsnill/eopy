@@ -1,7 +1,7 @@
 import gdal
 
 
-def array_to_geotiff(inp_array, out_file, inp_gdal=None, gt=None, pj=None, nodata=None, compress=True, gdal_return=False):
+def array_to_geotiff(inp_array, out_file, inp_gdal=None, gt=None, pj=None, nodata=0, compress=True, gdal_return=False):
     """
     Export numpy array to GeoTiff file by providing either a reference GDAL raster object or GeoTransform and Projection
     information.
