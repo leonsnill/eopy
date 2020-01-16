@@ -1,7 +1,7 @@
 import gdal
 
 
-def array_to_geotiff(inp_array, out_file, inp_gdal=None, gt=None, pj=None, compress=True, gdal_return=False):
+def array_to_geotiff(inp_array, out_file, inp_gdal=None, gt=None, pj=None, nodata=None, compress=True, gdal_return=False):
     """
     Export numpy array to GeoTiff file by providing either a reference GDAL raster object or GeoTransform and Projection
     information.
@@ -17,6 +17,7 @@ def array_to_geotiff(inp_array, out_file, inp_gdal=None, gt=None, pj=None, compr
     :return: (bool) None (default) / GDAL raster object.
     """
     np2gdal_datatype = {
+        "bool": 1,
         "uint8": 1,
         "int8": 1,
         "uint16": 2,
@@ -57,11 +58,15 @@ def array_to_geotiff(inp_array, out_file, inp_gdal=None, gt=None, pj=None, compr
     if len(inp_array.shape) > 2:
         for i in range(zdim):
             w_array = inp_array[i, :, :]
-            dst_dataset.GetRasterBand(i+1).WriteArray(w_array)
+            out_band = dst_dataset.GetRasterBand(i+1)
+            out_band.SetNoDataValue(nodata)
+            out_band.WriteArray(w_array)
     else:
-        dst_dataset.GetRasterBand(1).WriteArray(inp_array)
+        out_band = dst_dataset.GetRasterBand(1)
+        out_band = out_band.SetNoDataValue(nodata)
+        out_band.WriteArray(inp_array)
 
-    dst_dataset = None
+    dst_dataset = out_band = None
 
     if gdal_return:
         return gdal.Open(out_file)
