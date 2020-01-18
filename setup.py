@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     # Needed to silence warnings (and to be a worthwhile package)
-    name='lsnrs',
+    name='eopy',
     url='https://github.com/leonsnill/lsnrs.git',
     author='Leon Nill',
     author_email='leon.nill@hu-berlin.de',

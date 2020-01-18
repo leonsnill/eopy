@@ -47,7 +47,7 @@ def sample_random(target_geom, n_samples=50, within=False, nodata=None,
         ymax = y_ref + (int((ymax - y_ref) / grid_size)) * grid_size
 
     # --------------------------------------------------
-    # Vector data
+    # vector data
     # --------------------------------------------------
     if is_vector:
 
@@ -80,7 +80,7 @@ def sample_random(target_geom, n_samples=50, within=False, nodata=None,
                     samples.append((sample_x, sample_y))
 
     # --------------------------------------------------
-    # Raster data
+    # raster data
     # --------------------------------------------------
     else:
         target_array = target_geom.ReadAsArray()

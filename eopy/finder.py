@@ -1,7 +1,7 @@
 import os
 import glob
 
-def findir(dir, pattern=None, path=True, recursive=False):
+def finder(dir, pattern=None, path=True, recursive=False):
     """
     Lists files / directories in directory.
 
