@@ -34,7 +34,3 @@ def coords_to_points(coordinates, outfile, epsg=4326, driver='ESRI Shapefile'):
     outDataSource = None
 
     return ogr.Open(outfile)
-
-
-#proj = osr.SpatialReference(wkt=landsat.GetProjection())
-#int(proj.GetAttrValue('AUTHORITY',1))
