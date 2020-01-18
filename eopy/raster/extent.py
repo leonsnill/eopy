@@ -11,6 +11,9 @@ def extent(inp_raster):
     ext_ulx, ext_uly = float('-inf'), float('inf')
     ext_lrx, ext_lry = float('inf'), float('-inf')
 
+    if not isinstance(inp_raster, list):
+        inp_raster = [inp_raster]
+
     for raster in inp_raster:
         raster = gdal.Open(raster, gdal.GA_ReadOnly)
         gt = raster.GetGeoTransform()
