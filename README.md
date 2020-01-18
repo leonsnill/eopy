@@ -1,3 +1,3 @@
-# Remote Sensing Tools
+# Earth Observation Tools
 ## Collection of geographic processing tools
 
