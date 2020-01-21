@@ -31,6 +31,7 @@ def extract(img, points, field=None):
     else:
         if isinstance(points, str):
             points = ogr.Open(points)
+            lyr_points = points.GetLayer()
 
         elif isinstance(points, ogr.DataSource):
             lyr_points = points.GetLayer()
