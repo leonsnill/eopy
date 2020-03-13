@@ -1,28 +1,44 @@
 import os
-import glob
+import re
 
-def finder(dir, pattern=None, path=True, recursive=False):
+def finder(directory, suffix="", pattern="", full_path=False, incl_dir=False, recursive=False):
     """
-    Lists files / directories in directory.
+    List files and directories in directory. Allows for specifying file endings and patterns in strings. Recursive
+    option available.
 
-    :param dir: (str) Input directory in which to search files.
-    :param ext: (str) Optional. Only return files with certain extension (e.g. '.txt').
-    :param path: (bool) Return full path (default True).
-    :param recursive: (bool) Apply recursive file matching (default False).
-    :return: List of files / directories.
+    Args:
+        directory: Input directory.
+        suffix: (optional) Returns only files with provided suffix.
+        pattern: (optional) Return only files and directories that match a given string at any position.
+        full_path: Return full absolute path (default = False).
+        incl_dir: Include directories in search (default = False).
+        recursive: List files and directories in subfolders (default = False).
+
+    Returns: List of files/directories.
+
     """
-    if pattern is not None:
-        pattern_str = pattern
-    else:
-        pattern_str = ''
+    # initialise output
+    finder_list = []
 
-    if path:
-        if recursive:
-            return sorted(glob.glob(dir + '/**/*' + pattern_str, recursive=True))
-        else:
-            return sorted(glob.glob(dir + '/*' + pattern_str))
-    else:
-        if recursive:
-            return sorted([os.path.basename(x) for x in glob.glob(dir + '/**/*' + pattern_str, recursive=True)])
-        else:
-            return sorted([os.path.basename(x) for x in glob.glob(dir + '/*' + pattern_str)])
+    # iterate through elements in input directory
+    for e in os.scandir(directory):
+
+        # files
+        if e.is_file() and e.path.endswith(suffix) and re.search(pattern, e.name):
+            if full_path:
+                finder_list.append(e.path)
+            else:
+                finder_list.append(e.name)
+
+        # directories
+        if e.is_dir() and (incl_dir | recursive) and re.search(pattern, e.name):
+            if full_path:
+                finder_list.append(e.path)
+            else:
+                finder_list.append(e.name)
+
+            # re-pply function if recursive
+            if recursive:
+                finder_list = finder(e.path, suffix, pattern, full_path, recursive)
+
+    return finder_list

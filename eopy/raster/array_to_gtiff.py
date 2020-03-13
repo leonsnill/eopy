@@ -1,21 +1,24 @@
 import gdal
 
 
-def array_to_geotiff(inp_array, out_file, inp_gdal=None, gt=None, pj=None, nodata=None, compress=True, gdal_return=False):
+def array_to_geotiff(inp_array, out_file, inp_img=None, gt=None, pj=None, nodata=None, compress=False):
     """
-    Export numpy array to GeoTiff file by providing either a reference GDAL raster object or GeoTransform and Projection
-    information.
+    Export numpy array to GeoTiff by providing either a reference GDAL raster object or information on the
+    image transform and projection.
 
-    :param inp_array: (ndarray) Input numpy ndarray.
-    :param out_file: (str) Filename of GeoTiff with extension, e.g. 'new_file.tif'.
-    :param inp_gdal: (gdal raster) Reference GDAL raster object from which to take the GeoTransform and Projection.
-    :param gt: (tuple) GDAL GeoTransform tuple (origin x, pixel width, pixel x rotation, origin y, pixel y rotation,
-    pixel height).
-    :param pj: (str) Target projection in Proj4 format.
-    :param compress: (bool) Use data compression in output tiff (default to True).
-    :param gdal_return: (bool) If GDAL raster object should be returned (default to False).
-    :return: (bool) None (default) / GDAL raster object.
+    Args:
+        inp_array: Array to be exported. Array dtype will be the output dtype.
+        out_file: Output filename.
+        inp_img: (optional) Reference gdal raster object.
+        gt: (optional) Geotransform parameters as obtained from .GetGeoTransform()
+        pj: (optional) Projection as obtained from .GetProjection()
+        nodata: (optional) Output no data value.
+        compress: Use compression (COMPRESS=DEFLATE) (default = False).
+
+    Returns: GDAL raster object.
+
     """
+    # datatype lookup dict
     np2gdal_datatype = {
         "bool": 1,
         "uint8": 1,
@@ -31,31 +34,40 @@ def array_to_geotiff(inp_array, out_file, inp_gdal=None, gt=None, pj=None, nodat
         "complex128": 11,
     }
 
+    # get array dimensions
     if len(inp_array.shape) > 2:
-        ncol = inp_array.shape[1]
-        nrow = inp_array.shape[2]
+        xdim = inp_array.shape[2]
+        ydim = inp_array.shape[1]
         zdim = inp_array.shape[0]
     else:
-        ncol = inp_array.shape[0]
-        nrow = inp_array.shape[1]
+        xdim = inp_array.shape[1]
+        ydim = inp_array.shape[0]
         zdim = 1
 
-    if inp_gdal is not None:
-        gt = inp_gdal.GetGeoTransform()
-        pj = inp_gdal.GetProjection()
+    # check for reference image and retrieve transform and projection
+    if inp_img:
+        gt = inp_img.GetGeoTransform()
+        pj = inp_img.GetProjection()
 
+    # translate array datatype to GDAL datatype
     dtype = np2gdal_datatype[str(inp_array.dtype)]
+
+    # initialise driver
     driver = gdal.GetDriverByName('GTiff')
 
+    # check if output .tif should be compressed and create output data source
     if compress:
-        dst_dataset = driver.Create(out_file, nrow, ncol, zdim, dtype, options=['COMPRESS=DEFLATE'])
+        dst_dataset = driver.Create(out_file, xdim, ydim, zdim, dtype, options=['COMPRESS=DEFLATE'])
     else:
-        dst_dataset = driver.Create(out_file, nrow, ncol, zdim, dtype)
+        dst_dataset = driver.Create(out_file, xdim, ydim, zdim, dtype)
 
+    # set transform and projection
     dst_dataset.SetGeoTransform(gt)
     dst_dataset.SetProjection(pj)
 
-    if len(inp_array.shape) > 2:
+    # write data to disc
+    # if multi-band iterate over z-dimension
+    if zdim > 1:
         for i in range(zdim):
             w_array = inp_array[i, :, :]
             out_band = dst_dataset.GetRasterBand(i+1)
@@ -70,5 +82,4 @@ def array_to_geotiff(inp_array, out_file, inp_gdal=None, gt=None, pj=None, nodat
 
     dst_dataset = out_band = None
 
-    if gdal_return:
-        return gdal.Open(out_file)
+    return gdal.Open(out_file)

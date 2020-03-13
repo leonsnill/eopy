@@ -4,11 +4,11 @@ import ogr
 
 
 def sample_random(target_geom, n_samples=50, within=False, nodata=None,
-                  buffer=None, grid_ref=None, grid_size=None, min_distance=None):
+                  buffer=None, grid_ref=None, grid_size=None, min_distance=False):
     """
     Stratified random sampling of n-samples for a target geometry.
 
-    :param target_geom:     Geometry to sample in. Can be of type gdal.Dataset and ogr.DataSource.
+    :param target_geom:     Geometry to sample in. Can be of type gdal.Dataset and ogr.Geometry.
     :param n_samples:       Number of samples.
     :param within:          Check, wether samples should lie within the polygon or valid raster data (True) or just the
                             bounding box of the target geometry. Default to False.
@@ -21,35 +21,22 @@ def sample_random(target_geom, n_samples=50, within=False, nodata=None,
     :return:                List of tuples with coordinates of sample points (x,y).
     """
 
-    if isinstance(target_geom, ogr.DataSource):
-        xmin, xmax, ymin, ymax = target_geom.GetEnvelope()
-        is_vector = True
-
-    elif isinstance(target_geom, gdal.Dataset):
-        gt = target_geom.GetGeoTransform()
-        ndims = target_geom.RasterCount
-        xdim = target_geom.RasterXSize
-        ydim = target_geom.RasterYSize
-
-        xmin = gt[0]
-        ymax = gt[3]
-        xmax = xmin + gt[1] * xdim
-        ymin = ymax + gt[5] * ydim
-        is_vector = False
-
-    if grid_ref:
-        x_ref = grid_ref[0]
-        y_ref = grid_ref[1]
-
-        xmin = x_ref + (int((xmin - x_ref) / grid_size)) * grid_size
-        xmax = x_ref + (int((xmax - x_ref) / grid_size)) * grid_size
-        ymin = y_ref + (int((ymin - y_ref) / grid_size)) * grid_size
-        ymax = y_ref + (int((ymax - y_ref) / grid_size)) * grid_size
 
     # --------------------------------------------------
     # vector data
     # --------------------------------------------------
-    if is_vector:
+
+    if isinstance(target_geom, ogr.Geometry):
+        xmin, xmax, ymin, ymax = target_geom.GetEnvelope()
+
+        if grid_ref:
+            x_ref = grid_ref[0]
+            y_ref = grid_ref[1]
+
+            xmin = x_ref + (int((xmin - x_ref) / grid_size)) * grid_size
+            xmax = x_ref + (int((xmax - x_ref) / grid_size)) * grid_size
+            ymin = y_ref + (int((ymin - y_ref) / grid_size)) * grid_size
+            ymax = y_ref + (int((ymax - y_ref) / grid_size)) * grid_size
 
         # Initialise variables
         samples = []
@@ -59,7 +46,7 @@ def sample_random(target_geom, n_samples=50, within=False, nodata=None,
             sample_x = np.random.choice(np.arange(xmin, xmax, grid_size))
             sample_y = np.random.choice(np.arange(ymin, ymax, grid_size))
 
-            if min_distance & len(samples) > 0:
+            if (min_distance & len(samples) > 0):
                 distance = abs(np.subtract(samples, (sample_x, sample_y)))
                 distance_logical = np.any(distance < min_distance)
 
@@ -82,7 +69,17 @@ def sample_random(target_geom, n_samples=50, within=False, nodata=None,
     # --------------------------------------------------
     # raster data
     # --------------------------------------------------
-    else:
+    elif isinstance(target_geom, gdal.Dataset):
+        gt = target_geom.GetGeoTransform()
+        ndims = target_geom.RasterCount
+        xdim = target_geom.RasterXSize
+        ydim = target_geom.RasterYSize
+
+        xmin = gt[0]
+        ymax = gt[3]
+        xmax = xmin + gt[1] * xdim
+        ymin = ymax + gt[5] * ydim
+
         target_array = target_geom.ReadAsArray()
 
         if min_distance:
@@ -106,6 +103,9 @@ def sample_random(target_geom, n_samples=50, within=False, nodata=None,
         sample_y = sample_y + gt[5] / 2
 
         samples = list(map(tuple, np.array((sample_x, sample_y)).T))
+
+    else:
+        print("Target geometry must be of type gdal.Dataset and ogr.DataSource")
 
     return samples
 
