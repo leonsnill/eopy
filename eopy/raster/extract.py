@@ -1,5 +1,6 @@
 import gdal, ogr, osr
-from eopy.raster import extent, extent_to_geom
+from .extent import extent
+from .extent_to_geom import extent_to_geom
 
 
 def extract(img, points, attributes=None):
