@@ -99,7 +99,7 @@ def sample_random(target_geom, n_samples=50, within=False, nodata=None,
         sample_y = sample_mask[0][sample] * gt[5] + gt[3]
 
         # correct to pixel center
-        sample_x = sample_x + gt[1]/2
+        sample_x = sample_x + gt[1] / 2
         sample_y = sample_y + gt[5] / 2
 
         samples = list(map(tuple, np.array((sample_x, sample_y)).T))

@@ -1,20 +1,19 @@
 import ogr, osr
 
 
-def coords_to_points(coordinates, outfile, epsg=4326, driver='ESRI Shapefile'):
+def coords_to_points(coordinates, epsg=4326):
     """
     Create spatial points dataset from list of xy-coordinates.
 
     :param target_geom:
     :return:
     """
-    outDriver = ogr.GetDriverByName(driver)
-    outDataSource = outDriver.CreateDataSource(outfile)
+    outDataSource = ogr.GetDriverByName('Memory').CreateDataSource('')
 
     dest_srs = osr.SpatialReference()
     dest_srs.ImportFromEPSG(epsg)
 
-    outLayer = outDataSource.CreateLayer('Test', dest_srs, geom_type=ogr.wkbPoint)
+    outLayer = outDataSource.CreateLayer('', dest_srs, geom_type=ogr.wkbPoint)
     outLayer.CreateField(ogr.FieldDefn('id', ogr.OFTInteger))
     featureDefn = outLayer.GetLayerDefn()
 
@@ -31,6 +30,5 @@ def coords_to_points(coordinates, outfile, epsg=4326, driver='ESRI Shapefile'):
         feat = point = None
 
     outLayer = None
-    outDataSource = None
 
-    return ogr.Open(outfile)
+    return outDataSource
