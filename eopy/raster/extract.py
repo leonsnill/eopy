@@ -36,6 +36,7 @@ def extract(img, points, attributes=None):
         if isinstance(points, str):
             ds = ogr.Open(points)
             lyr = ds.GetLayer()
+            ds = None
 
         elif isinstance(points, ogr.DataSource):
             lyr = points.GetLayer()
@@ -75,7 +76,8 @@ def extract(img, points, attributes=None):
 
             # retrieve geometry and check if input feature is of type multipoint
             if feat.GetGeometryRef().GetGeometryName() == 'MULTIPOINT':
-                geom = feat.GetGeometryRef().Clone().GetGeometryRef(0)
+                geom_ = feat.GetGeometryRef().Clone()
+                geom = geom_.GetGeometryRef(0)
             else:
                 geom = feat.GetGeometryRef().Clone()
 
@@ -99,5 +101,6 @@ def extract(img, points, attributes=None):
 
         # reset layer
         lyr.ResetReading()
+        geom = geom_ = None
 
     return values
