@@ -23,7 +23,7 @@ def random_sample(target, n_samples=10, type='list', min_distance=None, img_ref=
     # get/set nodata value
     nodata = target.GetRasterBand(1).GetNoDataValue()
     if nodata:
-        geom_array = np.where(geom_array == nodata, 0, 1)
+        geom_array = np.where(geom_array == nodata, 0, geom_array)
 
     geom_array = np.where(~np.isnan(geom_array), 1, 0)
 
