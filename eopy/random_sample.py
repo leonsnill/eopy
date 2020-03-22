@@ -17,8 +17,14 @@ def random_sample(target, n_samples=10, type='list', min_distance=None, img_ref=
     # Array Part
     gt = target.GetGeoTransform()
 
-    # Reshape 2D into 1D and create x and y index arrays
+    # reshape 2D into 1D and create x and y index arrays
     geom_array = target.ReadAsArray()
+
+    # get/set nodata value
+    nodata = target.GetRasterBand(1).GetNoDataValue()
+    if nodata:
+        geom_array = np.where(geom_array == nodata, 0, geom_array)
+
     geom_array = geom_array.astype('bool')
     indiy, indix = np.indices((geom_array.shape[0], geom_array.shape[1]))
 
