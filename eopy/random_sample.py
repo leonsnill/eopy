@@ -11,7 +11,7 @@ def random_sample(target, n_samples=10, type='list', min_distance=None, img_ref=
     # Geometry Part
     if isinstance(target, ogr.Geometry):
         if img_ref:
-            target = rasterize_geom(target, img_ref)
+            target = rasterize_geom(target, target_raster=img_ref)
         else:
             print("No reference image provided!")
 
