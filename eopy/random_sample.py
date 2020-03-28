@@ -5,7 +5,8 @@ import numpy as np
 from .vector.rasterize_geom import rasterize_geom
 from .vector.coords_to_points import coords_to_points
 
-def random_sample(target, n_samples=10, type='list', min_distance=None, img_ref=None):
+
+def random_sample(target, n_samples=10, type='list', min_distance=None, grid_size=30, img_ref=None):
 
     # Geometry Part
     if isinstance(target, ogr.Geometry):
@@ -69,4 +70,3 @@ def random_sample(target, n_samples=10, type='list', min_distance=None, img_ref=
         samples = coords_to_points(samples, epsg=epsg_int)
 
     return samples
-
