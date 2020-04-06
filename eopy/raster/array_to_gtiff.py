@@ -71,13 +71,13 @@ def array_to_geotiff(inp_array, out_file, inp_img=None, gt=None, pj=None, nodata
         for i in range(zdim):
             w_array = inp_array[i, :, :]
             out_band = dst_dataset.GetRasterBand(i+1)
-            if nodata:
-                out_band.SetNoDataValue(nodata)
+            #if nodata:
+            out_band.SetNoDataValue(nodata)
             out_band.WriteArray(w_array)
     else:
         out_band = dst_dataset.GetRasterBand(1)
-        if nodata:
-            out_band.SetNoDataValue(nodata)
+        #if nodata:
+        out_band.SetNoDataValue(nodata)
         out_band.WriteArray(inp_array)
 
     dst_dataset = out_band = None
