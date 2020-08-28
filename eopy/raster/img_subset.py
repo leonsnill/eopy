@@ -25,15 +25,16 @@ def img_subset(img, extent, coordinates=True, write=False, filename=None, spatia
                                 extent[2] - extent[0],
                                 extent[3] - extent[1])
 
+    img_gt = img.GetGeoTransform()
+    img_proj = img.GetProjection()
+    subset_ulx, subset_uly = gdal.ApplyGeoTransform(
+        img_gt, extent[0], extent[1])
+    gt = list(img_gt)
+    gt[0] = subset_ulx
+    gt[3] = subset_uly
+
     if write:
         if filename is not None:
-            img_gt = img.GetGeoTransform()
-            img_proj = img.GetProjection()
-            subset_ulx, subset_uly = gdal.ApplyGeoTransform(
-                img_gt, extent[0], extent[1])
-            gt = list(img_gt)
-            gt[0] = subset_ulx
-            gt[3] = subset_uly
             array_to_geotiff(img_array, filename, gt=gt, pj=img_proj)
         else:
             print('Output filename not defined!')
