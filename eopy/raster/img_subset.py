@@ -3,7 +3,7 @@ from .img_offsets import img_offsets
 from .array_to_gtiff import array_to_geotiff
 
 
-def img_subset(img, extent, coordinates=True, write=False, filename=None):
+def img_subset(img, extent, coordinates=True, write=False, filename=None, spatial_info=False):
     """
     Reads in image subsets as numpy array based on a user defined bounding box of real world or image coordinates.
 
@@ -38,4 +38,7 @@ def img_subset(img, extent, coordinates=True, write=False, filename=None):
         else:
             print('Output filename not defined!')
 
-    return img_array
+    if spatial_info:
+        return (img_array, gt, img_proj)
+    else:
+        return img_array
