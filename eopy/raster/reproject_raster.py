@@ -1,10 +1,10 @@
 import gdal, gdalconst
 
 
-def reproject_raster(inp, resAlg, out, ref=None, dstSRS=None, srcNoData=None, dstNodata=None):
+def reproject_raster(img, resAlg, out, ref=None, dstSRS=None, srcNoData=None, dstNodata=None):
     """
 
-    :param inp:
+    :param img:
     :param resAlg:
     :param out:
     :param ref:
@@ -22,19 +22,25 @@ def reproject_raster(inp, resAlg, out, ref=None, dstSRS=None, srcNoData=None, ds
         "mode": gdalconst.GRA_Mode
     }
 
+    # check for new CRS
+    if dstSRS is None:
+        dstSRS = img.GetProjection()
+
+
+
     if ref is not None:
-        src_proj = inp.GetProjection()
-        src_trans = inp.GetGeoTransform()
+        src_proj = img.GetProjection()
+        src_trans = img.GetGeoTransform()
 
         ref_proj = ref.GetProjection()
         ref_trans = ref.GetGeoTransform()
         xdim = ref.RasterXSize
         ydim = ref.RasterYSize
-        bands = inp.RasterCount
+        bands = img.RasterCount
 
         # check datatype:
         if resAlg == 'near':
-            dtype = inp.GetRasterBand(1).DataType
+            dtype = img.GetRasterBand(1).DataType
         else:
             dtype = 6  # Float32
 
@@ -46,13 +52,13 @@ def reproject_raster(inp, resAlg, out, ref=None, dstSRS=None, srcNoData=None, ds
 
         # check NoData value:
         if srcNoData is not None:
-            inp.GetRasterBand(1).SetNoDataValue(srcNoData)
+            img.GetRasterBand(1).SetNoDataValue(srcNoData)
         if dstNodata is not None:
             dst.GetRasterBand(1).SetNoDataValue(dstNodata)
             dst.GetRasterBand(1).Fill(dstNodata)
-            gdal.ReprojectImage(inp, dst, src_proj, ref_proj, resAlg)
+            gdal.ReprojectImage(img, dst, src_proj, ref_proj, resAlg)
         else:
-            gdal.ReprojectImage(inp, dst, src_proj, ref_proj, resAlg)
+            gdal.ReprojectImage(img, dst, src_proj, ref_proj, resAlg)
 
         del dst
 
@@ -61,9 +67,9 @@ def reproject_raster(inp, resAlg, out, ref=None, dstSRS=None, srcNoData=None, ds
     else:
         # check NoData value:
         if dstNodata is not None:
-            fil = gdal.Warp(out, inp, dstSRS=dstSRS, resampleAlg=resAlg, dstNodata=dstNodata)
+            fil = gdal.Warp(out, img, dstSRS=dstSRS, resampleAlg=resAlg, dstNodata=dstNodata)
         else:
-            fil = gdal.Warp(out, inp, dstSRS=dstSRS, resampleAlg=resAlg)
+            fil = gdal.Warp(out, img, dstSRS=dstSRS, resampleAlg=resAlg)
 
         del fil
         return gdal.Open(out)

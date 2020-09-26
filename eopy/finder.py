@@ -31,11 +31,12 @@ def finder(directory, suffix="", pattern="", full_path=False, incl_dir=False, re
                 finder_list.append(e.name)
 
         # directories
-        if e.is_dir() and (incl_dir | recursive) and re.search(pattern, e.name):
-            if full_path:
-                finder_list.append(e.path)
-            else:
-                finder_list.append(e.name)
+        if e.is_dir() and (incl_dir | recursive):
+            if re.search(pattern, e.name):
+                if full_path:
+                    finder_list.append(e.path)
+                else:
+                    finder_list.append(e.name)
 
             # re-pply function if recursive
             if recursive:
