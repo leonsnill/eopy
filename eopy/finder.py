@@ -38,8 +38,9 @@ def finder(directory, suffix="", pattern="", full_path=False, incl_dir=False, re
                 else:
                     finder_list.append(e.name)
 
-            # re-pply function if recursive
+            # reapply function if recursive
             if recursive:
-                finder_list = finder(e.path, suffix, pattern, full_path, recursive)
+                finder_list2 = finder(e.path, suffix, pattern, full_path, recursive)
+                finder_list = finder_list + finder_list2
 
     return finder_list
