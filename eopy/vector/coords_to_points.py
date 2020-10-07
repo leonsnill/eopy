@@ -1,7 +1,7 @@
 import ogr, osr
 
 
-def coords_to_points(coordinates, epsg=4326):
+def coords_to_points(coordinates, epsg=None, wkt=None):
     """
     Create spatial points dataset from list of xy-coordinates.
 
@@ -11,8 +11,10 @@ def coords_to_points(coordinates, epsg=4326):
     outDataSource = ogr.GetDriverByName('Memory').CreateDataSource('')
 
     dest_srs = osr.SpatialReference()
-    dest_srs.ImportFromEPSG(epsg)
-
+    if epsg:
+        dest_srs.ImportFromEPSG(epsg)
+    if wkt:
+        dest_srs.ImportFromWkt(wkt)
     outLayer = outDataSource.CreateLayer('', dest_srs, geom_type=ogr.wkbPoint)
     outLayer.CreateField(ogr.FieldDefn('id', ogr.OFTInteger))
     featureDefn = outLayer.GetLayerDefn()
