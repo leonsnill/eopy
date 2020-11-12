@@ -3,7 +3,7 @@ import gdal
 import ogr
 
 
-def sample_random(target_geom, n_samples=50, within=False, nodata=None,
+def sample_random(target_geom, n_samples=50, target_value=None, within=False, nodata=None,
                   buffer=None, grid_ref=None, grid_size=None, min_distance=False):
     """
     Stratified random sampling of n-samples for a target geometry.
@@ -89,10 +89,14 @@ def sample_random(target_geom, n_samples=50, within=False, nodata=None,
             sample_mask = np.ones((ydim, xdim), dtype=bool)
 
         if within:
-            target_array = np.where(target_array == nodata, False, True)
+            target_array_m = np.where(target_array == nodata, False, True)
             if ndims > 1:
-                target_array = np.prod(target_array, axis=0)
-            sample_mask = np.where(target_array * sample_mask)
+                target_array_m = np.prod(target_array_m, axis=0)
+            sample_mask = np.where(target_array_m * sample_mask)
+
+        if target_value:
+            target_array_m = np.where(target_array == target_value, True, False)
+            sample_mask = np.where(target_array_m * sample_mask)
 
         sample = np.random.choice(np.arange(0, len(sample_mask[0]), 1), size=n_samples, replace=False)
         sample_x = sample_mask[1][sample] * gt[1] + gt[0]
